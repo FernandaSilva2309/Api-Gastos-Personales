@@ -11,6 +11,10 @@ router.get('/test', (req, res) => {
     res.send('Hola, mundo');
 });
 
+router.get('/prueba', (req, res) => {
+  res.send('Esto es una prueba random');
+});
+
 router.post('/', verificarToken, (req, res) => {
   const nuevoGasto = db.add(req.body);
   res.status(201).json(nuevoGasto);
