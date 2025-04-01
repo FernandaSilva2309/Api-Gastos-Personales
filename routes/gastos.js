@@ -7,6 +7,10 @@ router.get('/', verificarToken, (req, res) => {
   res.json(db.getAll());
 });
 
+router.get('/test', (req, res) => {
+    res.send('Hola, mundo');
+});
+
 router.post('/', verificarToken, (req, res) => {
   const nuevoGasto = db.add(req.body);
   res.status(201).json(nuevoGasto);
