@@ -1,26 +1,24 @@
 import { Router } from 'express';
 import { authRequired } from '../middlewares/validateToken.js';
+import { getAllProductos, createProducto, editProducto, deleteProducto, getProducto } from '../controllers/product.controller.js';
+import { registerProductoSchema, editProductoSchema } from '../schemas/product.schema.js';
+import { validateSchema } from '../middlewares/validator.middleware.js';
 
 const router = Router();
 
-router.get('/products', authRequired, (req, res) => {
-    res.sendStatus(200);
-});
+//Obtiene todos los productos
+router.get('/products', getAllProductos);
 
-router.get('/product', authRequired, (req, res) => {
-    res.sendStatus(200);
-});
+//Obtiene un producto en especifico
+router.get('/product/:id', getProducto);
 
-router.post('/create/product', authRequired, (req, res) => {
-    res.sendStatus(200);
-});
+//Crea un nuevo producto
+router.post('/create/product', authRequired, validateSchema(registerProductoSchema), createProducto);
 
-router.put('/edit/product', authRequired, (req, res) => {
-    res.sendStatus(200);
-});
+//Edita un producto en especifico
+router.put('/edit/product/:id', authRequired, validateSchema(editProductoSchema), editProducto);
 
-router.delete('/delete', authRequired, (req, res) => {
-    res.sendStatus(200);
-});
+//Elimina un producto especifico
+router.delete('/delete/product/:id', authRequired, deleteProducto);
 
 export default router;
