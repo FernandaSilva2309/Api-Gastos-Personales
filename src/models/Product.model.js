@@ -20,6 +20,10 @@ const Producto = sequelize.define('Producto', {
     type: DataTypes.DECIMAL(10, 2),
     allowNull: false,
   },
+  imagen: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
 });
 
 // Relación: Un producto pertenece a una categoría

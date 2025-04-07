@@ -1,5 +1,7 @@
 import Producto from '../models/Product.model.js';
 import CategoriaProducto from '../models/CategoriaProducto.model.js';
+import fs from "fs";
+import path from "path";
 
 export const getAllProductos = async (req, res) => {
   try {
@@ -19,22 +21,31 @@ export const getAllProductos = async (req, res) => {
 
 export const createProducto = async (req, res) => {
   try {
-    const { nombre, precio, descripcion, categoriaId } = req.body; // Asegúrate de que estos campos se envíen desde el cliente
+    const { nombre, precio, descripcion, categoriaId } = req.body;
 
-    // Verificar que todos los datos necesarios estén presentes
+    // Verificar campos básicos
     if (!nombre || !precio || !descripcion || !categoriaId) {
       return res.status(400).json({ message: 'Faltan campos necesarios' });
     }
 
-    // Crear el nuevo producto
+    // Validar que se haya enviado una imagen
+    if (!req.file) {
+      return res.status(400).json({ message: 'La imagen es obligatoria.' });
+    }
+
+    // Construir ruta de la imagen
+    const imagen = `/uploads/products/${req.file.filename}`;
+
+    // Crear el producto con imagen incluida
     const nuevoProducto = await Producto.create({
       nombre,
       precio,
       descripcion,
-      categoriaId, // Relacionado con el id de la categoría
+      categoriaId,
+      imagen,
     });
 
-    res.status(201).json(nuevoProducto); // Enviar el nuevo producto como respuesta
+    res.status(201).json(nuevoProducto);
   } catch (error) {
     console.error('Error al crear el producto:', error);
     res.status(500).json({ message: 'Error al crear el producto' });
