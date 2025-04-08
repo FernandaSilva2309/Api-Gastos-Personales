@@ -18,7 +18,7 @@ router.get('/product/:id', getProducto);
 router.post('/create/product', authRequired, uploadImage.single('image'), multerErrorHandler, validateSchema(registerProductoSchema), createProducto);
 
 //Edita un producto en especifico
-router.put('/edit/product/:id', authRequired, validateSchema(editProductoSchema), editProducto);
+router.put('/edit/product/:id', authRequired, uploadImage.single('image'), multerErrorHandler, validateSchema(editProductoSchema), editProducto);
 
 //Elimina un producto especifico
 router.delete('/delete/product/:id', authRequired, deleteProducto);

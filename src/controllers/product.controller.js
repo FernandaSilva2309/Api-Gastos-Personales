@@ -54,30 +54,49 @@ export const createProducto = async (req, res) => {
 
 export const editProducto = async (req, res) => {
   try {
-    const { id } = req.params; // Obtener el ID del producto desde los parámetros de la URL
-    const { nombre, precio, descripcion, categoriaId } = req.body; // Obtener los datos del producto a actualizar
+    const { id } = req.params;
+    const { nombre, precio, descripcion, categoriaId } = req.body;
 
-    // Verificar que los campos necesarios estén presentes
-    if (!nombre && !precio && !descripcion && !categoriaId) {
+    // Verificar si se pasó algún campo para actualizar
+    if (!nombre && !precio && !descripcion && !categoriaId && !req.file) {
       return res.status(400).json({ message: 'No hay datos para actualizar' });
     }
 
-    // Buscar el producto en la base de datos por su ID
+    // Buscar el producto por su ID
     const producto = await Producto.findByPk(id);
 
     if (!producto) {
       return res.status(404).json({ message: 'Producto no encontrado' });
     }
 
-    // Actualizar los campos que han sido enviados en el cuerpo de la solicitud
+    // Si se subió una nueva imagen, construir la ruta
+    let nuevaImagen = producto.imagen; // Mantener la actual si no se envía nueva
+    if (req.file) {
+      // Ruta completa del archivo anterior
+      const rutaAnterior = path.join(process.cwd(), 'uploads', 'products', path.basename(producto.imagen));
+    
+      // Eliminar la imagen anterior si existe físicamente
+      fs.unlink(rutaAnterior, (err) => {
+        if (err) {
+          console.warn("No se pudo eliminar la imagen anterior:", err.message);
+        } else {
+          console.log("Imagen anterior eliminada:", rutaAnterior);
+        }
+      });
+    
+      // Asignar nueva ruta
+      nuevaImagen = `/uploads/products/${req.file.filename}`;
+    }
+
+    // Actualizar campos enviados
     await producto.update({
       nombre: nombre || producto.nombre,
       precio: precio || producto.precio,
       descripcion: descripcion || producto.descripcion,
       categoriaId: categoriaId || producto.categoriaId,
+      imagen: nuevaImagen,
     });
 
-    // Enviar la respuesta con el producto actualizado
     res.json(producto);
   } catch (error) {
     console.error('Error al actualizar el producto:', error);
@@ -85,9 +104,10 @@ export const editProducto = async (req, res) => {
   }
 };
 
+
 export const deleteProducto = async (req, res) => {
   try {
-    const { id } = req.params; // Obtener el ID del producto desde los parámetros de la URL
+    const { id } = req.params;
 
     // Buscar el producto por ID
     const producto = await Producto.findByPk(id);
@@ -96,7 +116,19 @@ export const deleteProducto = async (req, res) => {
       return res.status(404).json({ message: 'Producto no encontrado' });
     }
 
-    // Eliminar el producto
+    // Eliminar imagen si existe
+    if (producto.imagen) {
+      const rutaImagen = path.join(process.cwd(), producto.imagen);
+      fs.unlink(rutaImagen, (err) => {
+        if (err) {
+          console.warn(`No se pudo eliminar la imagen: ${rutaImagen}`, err.message);
+        } else {
+          console.log(`Imagen eliminada correctamente: ${rutaImagen}`);
+        }
+      });
+    }
+
+    // Eliminar el producto de la base de datos
     await producto.destroy();
 
     res.status(200).json({ message: 'Producto eliminado exitosamente' });
