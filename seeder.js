@@ -53,6 +53,18 @@ const sqlScript = `
     updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (categoriaId) REFERENCES CategoriaProductos(id) ON DELETE CASCADE
   );
+
+  -- Crear la tabla Carrito
+  CREATE TABLE IF NOT EXISTS carrito (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    userId INT NOT NULL,
+    productoId INT NOT NULL,
+    peso DECIMAL(10, 2) NOT NULL DEFAULT 1.00,
+    createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (userId) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (productoId) REFERENCES Productos(id) ON DELETE CASCADE
+  );
 `;
 
 // Función para encriptar contraseñas usando bcrypt
@@ -179,6 +191,14 @@ const productos = [
   },
 ];
 
+// Ejemplo de datos para la tabla carrito
+const carritoData = [
+  { userId: 2, productoId: 1, peso: 1.5 }, // María López añade 1.5 kg de Mangomitas
+  { userId: 2, productoId: 3, peso: 0.8 }, // María López añade 0.8 kg de Chicharrines
+  { userId: 3, productoId: 5, peso: 2.0 }, // Carlos Díaz añade 2.0 kg de Coco rayado
+  { userId: 3, productoId: 7, peso: 0.3 }, // Carlos Díaz añade 0.3 kg de Chile de árbol
+];
+
 // Función para insertar usuarios con contraseñas encriptadas
 const insertUsers = async () => {
   let userInsertSQL = "";
@@ -217,6 +237,18 @@ const insertProductos = () => {
   return productoInsertSQL;
 };
 
+// Función para insertar datos en la tabla carrito
+const insertCarrito = () => {
+  let carritoInsertSQL = "";
+
+  carritoData.forEach((item) => {
+    carritoInsertSQL += `INSERT INTO carrito (userId, productoId, peso) VALUES 
+      (${item.userId}, ${item.productoId}, ${item.peso});\n`;
+  });
+
+  return carritoInsertSQL;
+};
+
 // Ejecutar el script SQL
 connection.connect(async (err) => {
   if (err) {
@@ -231,10 +263,11 @@ connection.connect(async (err) => {
     const userInsertSQL = await insertUsers();
     const categoriaInsertSQL = insertCategorias();
     const productoInsertSQL = insertProductos();
+    const carritoInsertSQL = insertCarrito();
 
     // Ejecutar el script SQL (con las inserciones de los usuarios, categorías y productos)
     connection.query(
-      sqlScript + userInsertSQL + categoriaInsertSQL + productoInsertSQL,
+      sqlScript + userInsertSQL + categoriaInsertSQL + productoInsertSQL + carritoInsertSQL,
       (error, results) => {
         if (error) {
           console.error("Error al ejecutar el script SQL:", error);

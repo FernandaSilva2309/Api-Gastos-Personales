@@ -7,6 +7,7 @@ import cors from 'cors';
 import authRoutes from './routes/auth.routes.js';
 import productRoutes from './routes/product.routes.js';
 import categoryRoutes from './routes/category.routes.js';
+import CartRoutes from './routes/cart.routes.js';
 
 
 const app = express();
@@ -30,5 +31,6 @@ app.get('/api/isAlive', (req, res) => {
 app.use('/api', authRoutes);
 app.use('/api', productRoutes);
 app.use('/api', categoryRoutes);
+app.use('/api', CartRoutes);
 
 export default app;
