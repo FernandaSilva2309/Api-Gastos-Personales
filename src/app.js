@@ -8,12 +8,15 @@ import authRoutes from './routes/auth.routes.js';
 import productRoutes from './routes/product.routes.js';
 import categoryRoutes from './routes/category.routes.js';
 import CartRoutes from './routes/cart.routes.js';
+import paymentRoutes from './routes/payment.routes.js';
+import webhookRoutes from './routes/webhook.routes.js';
 
 
 const app = express();
 
 app.use(cors());
 app.use(morgan('dev'));
+app.use('/api', webhookRoutes);
 app.use(express.json());
 app.use(cookieParser());
 
@@ -32,5 +35,6 @@ app.use('/api', authRoutes);
 app.use('/api', productRoutes);
 app.use('/api', categoryRoutes);
 app.use('/api', CartRoutes);
+app.use('/api', paymentRoutes);
 
 export default app;

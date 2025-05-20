@@ -7,6 +7,9 @@ export const PORT = process.env.PORT || 3000;
 export const CASE_SENSITIVE_ROUTING = true;
 //Secret Key
 export const TOKEN_SECRET = 'fernandatokensecreto';
+//Stripe Secret Key
+export const STRIPE_SECRET_KEY = '';
+export const STRIPE_WEBHOOK_SECRET = "";
 
 //Base de datos
 export const DB_HOST = 'localhost';

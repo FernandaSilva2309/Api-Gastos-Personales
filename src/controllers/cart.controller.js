@@ -21,7 +21,7 @@ export const getCarritoByUserId = async (req, res) => {
     if (!carrito || carrito.length === 0) {
       return res
         .status(404)
-        .json({ message: "El carrito del usuario está vacío o no existe" });
+        .json({ message: "Carrito vacio, agrega un producto" });
     }
 
     // Enviar los registros del carrito como respuesta
